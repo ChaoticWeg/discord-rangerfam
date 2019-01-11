@@ -26,43 +26,14 @@ async def addrole(ctx, *, role: str):
         if role.lower() == 'all':
             await bot.give_all_roles(ctx)
             await ctx.send(f"Gave all roles to {ctx.author.mention}. Probably.")
+            logger.info(f"Successfully gave all roles to {ctx.author}")
         else:
             await bot.give_role(ctx, role)
             role_to_add = bot.find_role_by_name(ctx, role)
             await ctx.send(f"Gave the role `{role_to_add.name}` to {ctx.author.mention}")
+            logger.info(f"Successfully gave role {role_to_add.name} to {ctx.author}")
         
         await ctx.message.add_reaction(OK_EMOJI_CODE)
-
-        logger.info(f"Successfully gave role {role_to_add.name} to {ctx.author}")
-
-@addrole.error
-async def addrole_error(ctx, err):
-    """ ?addrole broke something... """
-    await ctx.message.add_reaction(NO_EMOJI_CODE)
-
-    # role does not exist
-    if isinstance(err, wegbot_errors.RoleNotFoundError):
-        bot.logger.info(f"Role '{err.role_name}' does not exist")
-        await ctx.send(f"There's no role here called '{err.role_name}', {ctx.author.mention}.")
-        return
-    
-    # role is ineligible
-    if isinstance(err, wegbot_errors.IneligibleRoleError):
-        bot.logger.warn(f"{ctx.author.mention} requested ineligible role '{err.role.name}' in {ctx.guild}")
-        await ctx.send(f"`{err.role.name}` can't be requested, {ctx.author.mention}.")
-        return
-
-    # permission errors
-    permission_errors = [discord.errors.Forbidden, discord.ext.commands.BotMissingPermissions, discord.ext.commands.MissingPermissions]
-    for perm_error in permission_errors:
-        if isinstance(err, perm_error):
-            bot.logger.warn(f"Permission error attempting to give a role to {ctx.author} in guild '{ctx.guild}'")
-            await ctx.send(f"I don't have permission to do that, {ctx.author.mention}. Go bug Weg about it.")
-            return
-    
-    # unknown error
-    await ctx.send("Error! I just broke; that's all I know. Please send Weg.")
-    bot.logger.error(err)
 
 removerole_description = f"""Roles that can be requested are:
 - {(_newline + '- ').join(bot.eligible_roles)}
@@ -88,6 +59,37 @@ async def removerole(ctx, *, role: str):
         await ctx.message.add_reaction(OK_EMOJI_CODE)
         role_to_add = bot.find_role_by_name(ctx, role)
         await ctx.send(f"Removed the role `{role_to_add.name}` from {ctx.author.mention}")
+
+
+@addrole.error
+@removerole.error
+async def role_error(ctx, err):
+    """ ?addrole broke something... """
+    await ctx.message.add_reaction(NO_EMOJI_CODE)
+
+    # role does not exist
+    if isinstance(err, wegbot_errors.RoleNotFoundError):
+        bot.logger.info(f"Role '{err.role_name}' does not exist")
+        await ctx.send(f"There's no role here called '{err.role_name}', {ctx.author.mention}.")
+        return
+    
+    # role is ineligible
+    if isinstance(err, wegbot_errors.IneligibleRoleError):
+        bot.logger.warn(f"{ctx.author.mention} requested ineligible role '{err.role.name}' in {ctx.guild}")
+        await ctx.send(f"`{err.role.name}` can't be requested, {ctx.author.mention}.")
+        return
+
+    # permission errors
+    permission_errors = [discord.errors.Forbidden, discord.ext.commands.BotMissingPermissions, discord.ext.commands.MissingPermissions]
+    for perm_error in permission_errors:
+        if isinstance(err, perm_error):
+            bot.logger.warn(f"Permission error attempting to give a role to {ctx.author} in guild '{ctx.guild}'")
+            await ctx.send(f"I don't have permission to do that, {ctx.author.mention}. Go bug Weg about it.")
+            return
+    
+    # unknown error
+    await ctx.send("Error! Something broke; that's all I know. Please send Weg.")
+    bot.logger.error(err)
 
 
 if __name__ == "__main__":
