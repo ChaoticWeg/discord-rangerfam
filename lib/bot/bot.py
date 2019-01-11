@@ -13,6 +13,7 @@ class WegBot(commands.Bot):
         self._eligible_roles = config.read_eligible_roles()
 
     async def on_ready(self):
+        self.change_presence(activity=discord.Game(name=f'discord.py v{discord.__version__}'))
         print(f"Ready: {self.user} (ID: {self.user.id})")
     
     def run(self):
