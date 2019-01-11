@@ -21,7 +21,9 @@ async def role(ctx, *, role: str):
     if not ctx.message.channel.id in bot.eligible_channels:
         return
     
-    print(f"{ctx.author} in guild '{ctx.guild}' wants a role called {role}")
+    logger = bot.logger
+
+    logger.info(f"{ctx.author} in guild '{ctx.guild}' wants a role called {role}")
     async with ctx.typing():
         role_to_add = None
 
@@ -30,15 +32,15 @@ async def role(ctx, *, role: str):
                 role_to_add = this_role
         
         if role_to_add is None:
-            print(f"Role '{role}' does not exist in guild '{ctx.guild}'.")
+            logger.info(f"Role '{role}' does not exist in guild '{ctx.guild}'.")
             await ctx.message.add_reaction(NO_EMOJI_CODE)
             await ctx.send(f"I don't see a role with the name '{role}', {ctx.author.mention}.")
             return
         
         eligible_roles = [role.name.lower() for role in ctx.guild.roles if role.name.lower() in bot.eligible_roles]
         if not role_to_add.name.lower() in eligible_roles:
-            print(f"{ctx.author} requested ineligible role '{role_to_add.name}'")
-            print(f"eligible roles: {', '.join(eligible_roles)}")
+            logger.info(f"{ctx.author} requested ineligible role '{role_to_add.name}'")
+            logger.debug(f"eligible roles: [{', '.join(eligible_roles)}]")
             await ctx.message.add_reaction(NO_EMOJI_CODE)
             await ctx.send(f"The role `{role_to_add.name}` is not eligible to be requested, {ctx.author.mention}.")
             return
@@ -49,7 +51,7 @@ async def role(ctx, *, role: str):
         await ctx.message.add_reaction(OK_EMOJI_CODE)
         await ctx.send(f"Gave the role `{role_to_add.name}` to {ctx.author.mention}")
 
-        print(f"Successfully gave role {role_to_add.name} to {ctx.author}")
+        logger.info(f"Successfully gave role {role_to_add.name} to {ctx.author}")
 
 @role.error
 async def role_error(ctx, err):
@@ -60,12 +62,13 @@ async def role_error(ctx, err):
     permission_errors = [discord.errors.Forbidden, discord.ext.commands.BotMissingPermissions, discord.ext.commands.MissingPermissions]
     for perm_error in permission_errors:
         if isinstance(err, perm_error):
+            bot.logger.warn(f"Permission error attempting to give a role to {ctx.author} in guild '{ctx.guild}'")
             await ctx.send(f"I don't have permission to do that, {ctx.author.mention}. Go bug Weg about it.")
             return
     
     # unknown error
     await ctx.send("Error! I just broke; that's all I know. Please send Weg.")
-    print(err)
+    bot.logger.error(err)
 
 if __name__ == "__main__":
     bot.run()

@@ -1,5 +1,5 @@
 from discord.ext import commands
-from lib import config
+from lib import config, logging
 
 import discord
 
@@ -12,13 +12,18 @@ class WegBot(commands.Bot):
         super().__init__(**bot_info)
         self._eligible_roles = config.read_eligible_roles()
         self._eligible_channels = config.read_eligible_channels()
+        self._logger = logging.get_logger()
 
     async def on_ready(self):
         await self.change_presence(activity=discord.Game(name=f'?role <role> in #bot'))
-        print(f"Ready: {self.user} (ID: {self.user.id})")
+        self.logger.info(f"Ready: {self.user} (ID: {self.user.id})")
     
     def run(self):
         super().run(bot_token, reconnect=True)
+    
+    @property
+    def logger(self):
+        return self._logger
     
     @property
     def eligible_channels(self):
