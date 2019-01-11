@@ -50,10 +50,12 @@ async def role_error(ctx, err):
     """ ?role broke something... """
     await ctx.message.add_reaction(NO_EMOJI_CODE)
 
-    # 403 Forbidden
-    if isinstance(err, discord.errors.Forbidden) or isinstance(err, discord.ext.commands.BotMissingPermissions):
-        await ctx.send(f"I don't have permission to do that, {ctx.author.mention}. Go bug Weg about it.")
-        return
+    # permission errors
+    permission_errors = [discord.errors.Forbidden, discord.ext.commands.BotMissingPermissions, discord.ext.commands.MissingPermissions]
+    for perm_error in permission_errors:
+        if isinstance(err, perm_error):
+            await ctx.send(f"I don't have permission to do that, {ctx.author.mention}. Go bug Weg about it.")
+            return
     
     # unknown error
     await ctx.send("Error! I just broke; that's all I know. Please send Weg.")
