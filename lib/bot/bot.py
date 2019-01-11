@@ -11,13 +11,18 @@ class WegBot(commands.Bot):
     def __init__(self):
         super().__init__(**bot_info)
         self._eligible_roles = config.read_eligible_roles()
+        self._eligible_channels = config.read_eligible_channels()
 
     async def on_ready(self):
-        self.change_presence(activity=discord.Game(name=f'discord.py v{discord.__version__}'))
+        await self.change_presence(activity=discord.Game(name=f'?role <role> in #bot'))
         print(f"Ready: {self.user} (ID: {self.user.id})")
     
     def run(self):
         super().run(bot_token, reconnect=True)
+    
+    @property
+    def eligible_channels(self):
+        return self._eligible_channels
 
     @property
     def eligible_roles(self):

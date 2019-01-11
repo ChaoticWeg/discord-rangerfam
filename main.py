@@ -16,7 +16,12 @@ Roles that can be requested are:
 @bot.command(usage='<role>', description=role_description)
 async def role(ctx, *, role: str):
     """ Request a role by name. """
-    print(f"{ctx.author} wants a role called {role}")
+
+    # must be in eligible text channel
+    if not ctx.message.channel.id in bot.eligible_channels:
+        return
+    
+    print(f"{ctx.author} in guild '{ctx.guild}' wants a role called {role}")
     async with ctx.typing():
         role_to_add = None
 
@@ -25,14 +30,15 @@ async def role(ctx, *, role: str):
                 role_to_add = this_role
         
         if role_to_add is None:
-            print(f"Role '{role}' does not exist in this guild.")
+            print(f"Role '{role}' does not exist in guild '{ctx.guild}'.")
             await ctx.message.add_reaction(NO_EMOJI_CODE)
             await ctx.send(f"I don't see a role with the name '{role}', {ctx.author.mention}.")
             return
         
-        eligible_roles = [role for role in ctx.guild.roles if role.name.lower() in bot.eligible_roles]
+        eligible_roles = [role.name.lower() for role in ctx.guild.roles if role.name.lower() in bot.eligible_roles]
         if not role_to_add.name.lower() in eligible_roles:
             print(f"{ctx.author} requested ineligible role '{role_to_add.name}'")
+            print(f"eligible roles: {', '.join(eligible_roles)}")
             await ctx.message.add_reaction(NO_EMOJI_CODE)
             await ctx.send(f"The role `{role_to_add.name}` is not eligible to be requested, {ctx.author.mention}.")
             return
