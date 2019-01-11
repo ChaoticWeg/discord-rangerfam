@@ -13,7 +13,7 @@ addrole_description = f"""Roles that can be requested are:
 
 @bot.command(usage='<role>', description=addrole_description)
 async def addrole(ctx, *, role: str):
-    """ Request a role by name. """
+    """ Request a role by name, or request ALL. """
 
     # must be in eligible text channel
     if not ctx.message.channel.id in bot.eligible_channels:
