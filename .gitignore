@@ -1,3 +1,5 @@
 **/creds.json
 *.pyc
 .vscode
+
+lib/config/eligible_channels.json
