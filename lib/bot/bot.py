@@ -15,7 +15,7 @@ class WegBot(commands.Bot):
         self._logger = logging.get_logger()
 
     async def on_ready(self):
-        await self.change_presence(activity=discord.Game(name=f'?role <role> in #bot'))
+        await self.change_presence(activity=discord.Game(name=f'?help'))
         self.logger.info(f"Ready: {self.user} (ID: {self.user.id})")
     
     def run(self):
