@@ -30,10 +30,10 @@ async def addrole(ctx, *, role: str):
             await bot.give_role(ctx, role)
             role_to_add = bot.find_role_by_name(ctx, role)
             await ctx.send(f"Gave the role `{role_to_add.name}` to {ctx.author.mention}")
+            logger.info(f"Successfully gave role {role_to_add.name} to {ctx.author}")
         
         await ctx.message.add_reaction(OK_EMOJI_CODE)
 
-        logger.info(f"Successfully gave role {role_to_add.name} to {ctx.author}")
 
 @addrole.error
 async def addrole_error(ctx, err):
@@ -89,6 +89,11 @@ async def removerole(ctx, *, role: str):
         role_to_add = bot.find_role_by_name(ctx, role)
         await ctx.send(f"Removed the role `{role_to_add.name}` from {ctx.author.mention}")
 
+@removerole.error
+async def removerole_error(ctx, err):
+    await ctx.message.add_reaction(NO_EMOJI_CODE)
+    await ctx.send(f"You can't remove that role, {ctx.author.mention}.")
+    logger.info("can't remove that role")
 
 if __name__ == "__main__":
     bot.run()
