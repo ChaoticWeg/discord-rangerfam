@@ -6,6 +6,10 @@ def __get_filepath(filename):
     """ Get a filepath inside this directory. """
     return path.join(path.dirname(path.realpath(__file__)), filename)
 
+def __get_echo_filepath(filename):
+    """ Get a filepath inside echoes/. """
+    return path.join(path.dirname(path.realpath(__file__)), "echoes", filename)
+
 def __read_json(filename):
     """ Read JSON from a file inside this directory. """
     filepath = __get_filepath(filename)
@@ -40,3 +44,10 @@ def write_eligible_roles(roles):
 def read_eligible_channels():
     """ Read eligible channels from JSON file """
     return __read_json('eligible_channels.json')
+
+def read_echo(filename):
+    filepath = __get_echo_filepath(filename)
+    result = []
+    with open(filepath, 'r') as infile:
+        result.extend(infile.readlines())
+    return '\n'.join(result)
