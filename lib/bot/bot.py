@@ -50,6 +50,9 @@ class WegBot(commands.Bot):
     def find_role_by_name(self, ctx, name):
         results = [role for role in ctx.guild.roles if role.name.lower() == name.lower()]
         return None if len(results) < 1 else results[0]
+    
+    def get_echo(self, filename):
+        return config.read_echo(filename)
 
     async def give_role(self, ctx, name):
         self.logger.debug(f"Trying to give role '{name}' to {ctx.author} in {ctx.guild}")
