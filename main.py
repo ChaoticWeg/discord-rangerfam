@@ -26,6 +26,7 @@ async def addrole(ctx, *, role: str):
         if role.lower() == 'all':
             await bot.give_all_roles(ctx)
             await ctx.send(f"Gave all roles to {ctx.author.mention}. Probably.")
+            logger.info(f"Successfully gave all roles to {ctx.author}")
         else:
             await bot.give_role(ctx, role)
             role_to_add = bot.find_role_by_name(ctx, role)
@@ -34,9 +35,8 @@ async def addrole(ctx, *, role: str):
         
         await ctx.message.add_reaction(OK_EMOJI_CODE)
 
-
 @addrole.error
-async def addrole_error(ctx, err):
+async def role_error(ctx, err):
     """ ?addrole broke something... """
     await ctx.message.add_reaction(NO_EMOJI_CODE)
 
@@ -61,7 +61,7 @@ async def addrole_error(ctx, err):
             return
     
     # unknown error
-    await ctx.send("Error! I just broke; that's all I know. Please send Weg.")
+    await ctx.send("Error! Something broke; that's all I know. Please send Weg.")
     bot.logger.error(err)
 
 removerole_description = f"""Roles that can be requested are:
