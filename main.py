@@ -91,9 +91,24 @@ async def removerole(ctx, *, role: str):
 
 @removerole.error
 async def removerole_error(ctx, err):
+    logger = bot.logger
     await ctx.message.add_reaction(NO_EMOJI_CODE)
     await ctx.send(f"You can't remove that role, {ctx.author.mention}.")
     logger.info("can't remove that role")
+
+@bot.command(usage='', description="fresh")
+async def laine(ctx):
+    logger = bot.logger
+    _laine = bot.get_echo("laine.txt")
+    await ctx.send(_laine)
+    logger.info(f"served fresh laine requested by {ctx.author}")
+
+@bot.command(usage='', description="clap me daddy")
+async def clap(ctx):
+    logger = bot.logger
+    echo = bot.get_echo("clap.txt")
+    await ctx.send(echo)
+    logger.info(f"served fresh clap requested by {ctx.author}")
 
 if __name__ == "__main__":
     bot.run()
