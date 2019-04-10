@@ -4,9 +4,10 @@
 pkill -f discord-rangerfam
 
 # some setup
-thisdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-runalways="${thisdir}/run_always.sh"
-logfile="${thisdir}/run.log"
+export thisdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export runalways="${thisdir}/run_always.sh"
+export logfile="${thisdir}/run.log"
 
 # run run_always in the background, ignoring sighup
 nohup bash "${runalways}" >"${logfile}" 2>&1 &
+
